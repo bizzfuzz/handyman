@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 import javax.swing.BoxLayout;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import util.Dispatch;
 import util.Filer;
 import util.Prefs;
@@ -131,6 +132,7 @@ public class Window extends javax.swing.JFrame
         save = new javax.swing.JButton();
         load = new javax.swing.JButton();
         pause = new javax.swing.JButton();
+        wdir = new javax.swing.JButton();
         status = new javax.swing.JToolBar();
         statustext = new javax.swing.JLabel();
         tabs = new javax.swing.JTabbedPane();
@@ -147,6 +149,8 @@ public class Window extends javax.swing.JFrame
         lenfield = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         linbox = new javax.swing.JCheckBox();
+        jLabel5 = new javax.swing.JLabel();
+        dirbutton = new javax.swing.JButton();
         log = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         logtext = new javax.swing.JTextArea();
@@ -198,7 +202,27 @@ public class Window extends javax.swing.JFrame
         pause.setFocusable(false);
         pause.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         pause.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        pause.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                pauseActionPerformed(evt);
+            }
+        });
         menu.add(pause);
+
+        wdir.setText("working dir");
+        wdir.setFocusable(false);
+        wdir.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        wdir.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        wdir.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                wdirActionPerformed(evt);
+            }
+        });
+        menu.add(wdir);
 
         status.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         status.setRollover(true);
@@ -212,7 +236,7 @@ public class Window extends javax.swing.JFrame
         tags.setLayout(tagsLayout);
         tagsLayout.setHorizontalGroup(
             tagsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 190, Short.MAX_VALUE)
+            .addGap(0, 178, Short.MAX_VALUE)
         );
         tagsLayout.setVerticalGroup(
             tagsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -233,7 +257,7 @@ public class Window extends javax.swing.JFrame
         add.setLayout(addLayout);
         addLayout.setHorizontalGroup(
             addLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(tagfield, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
+            .addComponent(tagfield)
         );
         addLayout.setVerticalGroup(
             addLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -256,6 +280,17 @@ public class Window extends javax.swing.JFrame
 
         jLabel4.setText("linear dl");
 
+        jLabel5.setText("dir");
+
+        dirbutton.setText("not set");
+        dirbutton.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                dirbuttonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout prefsLayout = new javax.swing.GroupLayout(prefs);
         prefs.setLayout(prefsLayout);
         prefsLayout.setHorizontalGroup(
@@ -275,10 +310,19 @@ public class Window extends javax.swing.JFrame
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(lenfield, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(prefsLayout.createSequentialGroup()
-                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(prefsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(prefsLayout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(linbox, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGroup(prefsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(prefsLayout.createSequentialGroup()
+                                .addComponent(dirbutton)
+                                .addGap(28, 28, 28))
+                            .addGroup(prefsLayout.createSequentialGroup()
+                                .addComponent(linbox, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE)))))
                 .addContainerGap())
         );
         prefsLayout.setVerticalGroup(
@@ -299,8 +343,13 @@ public class Window extends javax.swing.JFrame
                 .addGap(11, 11, 11)
                 .addGroup(prefsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel4)
-                    .addComponent(linbox))
-                .addContainerGap(298, Short.MAX_VALUE))
+                    .addGroup(prefsLayout.createSequentialGroup()
+                        .addComponent(linbox)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(prefsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(dirbutton)
+                            .addComponent(jLabel5))))
+                .addContainerGap(265, Short.MAX_VALUE))
         );
 
         log.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "log"));
@@ -330,12 +379,12 @@ public class Window extends javax.swing.JFrame
             .addGroup(homeLayout.createSequentialGroup()
                 .addComponent(tags, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(homeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(add, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(prefs, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(homeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(prefs, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(add, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(log, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0))
+                .addComponent(log, javax.swing.GroupLayout.PREFERRED_SIZE, 411, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(24, 24, 24))
         );
         homeLayout.setVerticalGroup(
             homeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -382,14 +431,27 @@ public class Window extends javax.swing.JFrame
 
     private void startActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_startActionPerformed
     {//GEN-HEADEREND:event_startActionPerformed
+        if(session.tags.isEmpty())
+        {
+            statustext.setText("Add tags under 'add', [Enter] to add. Remove a tag by clicking its button");
+            JOptionPane.showMessageDialog(this, "No tags set");
+            return;
+        }
+        if(session.set.savedir.isEmpty())
+        {
+            statustext.setText("Set directory using the 'dir' button under 'prefs'");
+            JOptionPane.showMessageDialog(this, "Save directory not set");
+            return;
+        }
         getprefs();
         Thread thread = new Thread(new Dispatch(session));
         thread.start();
+        
     }//GEN-LAST:event_startActionPerformed
 
     private void saveActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_saveActionPerformed
     {//GEN-HEADEREND:event_saveActionPerformed
-        JFileChooser chooser=new JFileChooser(session.set.savedir);
+        JFileChooser chooser=new JFileChooser(session.set.workdir);
         int chosen=chooser.showSaveDialog(this);
         if(chosen==JFileChooser.APPROVE_OPTION)
         {
@@ -413,7 +475,7 @@ public class Window extends javax.swing.JFrame
     {//GEN-HEADEREND:event_loadActionPerformed
         try
         {
-            JFileChooser chooser=new JFileChooser(session.set.savedir);
+            JFileChooser chooser=new JFileChooser(session.set.workdir);
             int chosen=chooser.showOpenDialog(this);
             
             if(chosen==JFileChooser.APPROVE_OPTION)
@@ -448,7 +510,12 @@ public class Window extends javax.swing.JFrame
                 session.set.minLength=Integer.parseInt(list[2]);
                 session.set.minRating=Integer.parseInt(list[3]);
                 session.set.savedir=list[4];
-
+                if(session.set.savedir.isEmpty())
+                    dirbutton.setText("not set");
+                else
+                    dirbutton.setText("set");
+                
+                statustext.setText("Saving to "+session.set.savedir);
                 loadprefs(session.set);
                 showtags(session.tags);
                 log(chooser.getSelectedFile().getName()+" opened");
@@ -459,6 +526,52 @@ public class Window extends javax.swing.JFrame
             Logger.getLogger(Window.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_loadActionPerformed
+
+    private void dirbuttonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_dirbuttonActionPerformed
+    {//GEN-HEADEREND:event_dirbuttonActionPerformed
+        JFileChooser chooser=new JFileChooser(session.set.workdir);
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        int chosen=chooser.showOpenDialog(this);
+
+        if(chosen==JFileChooser.APPROVE_OPTION)
+        {
+            session.set.savedir=chooser.getSelectedFile().getPath();
+            dirbutton.setText("set");
+        }
+    }//GEN-LAST:event_dirbuttonActionPerformed
+
+    private void wdirActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_wdirActionPerformed
+    {//GEN-HEADEREND:event_wdirActionPerformed
+        JFileChooser chooser=new JFileChooser(session.set.workdir);
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        int chosen=chooser.showOpenDialog(this);
+
+        if(chosen==JFileChooser.APPROVE_OPTION)
+        {
+            session.set.workdir=chooser.getSelectedFile().getPath();
+            log("working directory set");
+        }
+    }//GEN-LAST:event_wdirActionPerformed
+
+    private void pauseActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_pauseActionPerformed
+    {//GEN-HEADEREND:event_pauseActionPerformed
+        synchronized(this)
+        {
+            if(pause.getText().equals("pause"))
+            {
+                int result=session.pause();
+                if(result==1)//prevent pausing before dl starts
+                    return;
+                pause.setText("resume");
+                statustext.setText(statustext.getText()+" | PAUSED");
+            }
+            else 
+            {
+                session.resume();
+                pause.setText("pause");
+            }
+        }
+    }//GEN-LAST:event_pauseActionPerformed
     private boolean isnumber(String s,int rad)
     {
         Scanner sc=new Scanner(s.trim());
@@ -504,11 +617,13 @@ public class Window extends javax.swing.JFrame
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel add;
+    private javax.swing.JButton dirbutton;
     private javax.swing.JPanel home;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField lenfield;
     private javax.swing.JCheckBox linbox;
@@ -527,5 +642,6 @@ public class Window extends javax.swing.JFrame
     private javax.swing.JTextField tagfield;
     private javax.swing.JPanel tags;
     private javax.swing.JTextField videofield;
+    private javax.swing.JButton wdir;
     // End of variables declaration//GEN-END:variables
 }

@@ -15,12 +15,13 @@ public class Prefs
     public int minRating;
     public int nVids;
     public boolean linear;
-    public String savedir;
+    public String savedir,workdir;
     public String[] sources;
     
     public Prefs()
     {
-        savedir = "/home/ian/dev/java/dl/";
+        workdir= "/home/ian/dev/java/dl/";
+        savedir ="";
         sources = new String[]{
             "pornhub", "tube8","extremetube", "youporn", "spankwire",
             "redtube", "keezmovies", "mofosex", "xtube"

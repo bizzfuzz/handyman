@@ -22,6 +22,7 @@ public class Search
     private final MD md;
     private final String tag;
     private final Session session;
+    public Download dl;
     
     public Search(String search, Session sess)
     {
@@ -37,25 +38,27 @@ public class Search
         md.start(tag, session);
     }
     //get n videos from page & subsequent pages
-    public void next()
+    public int next()
     {
         try
         {
-            Download dl=new Download(session);
+            dl=new Download(session);
             Video vid=md.results.get(current);
             System.out.println(" -Starting "+current+" from "+tag+"\n"+vid.title+" ("+vid.source+")\n");
             session.log("#"+(current+1)+" "+vid.title+" ("+tag+")");
-            dl.start(md.results.get(current));
+            int ret=dl.start(md.results.get(current));
             current++;
             if(current>=md.results.size())//got all vids from current page
             {
                 md.nextPage();
                 current=0;
             }
+            return ret;
         } 
         catch (IOException ex)
         {
             Logger.getLogger(Search.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return 2;
     }
 }

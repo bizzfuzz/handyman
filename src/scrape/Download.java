@@ -46,34 +46,38 @@ public class Download extends Crawler
         session=sess;
     }
     
-    public void start(Video vid)
+    public int start(Video vid)
     {
         try
         {
             running=true;
-            save(vid);
+            return save(vid);
         } 
         catch (IOException | ScriptException ex)
         {
             Logger.getLogger(Download.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return 2;
     }
     
-    public void save(Video vid) throws IOException, ScriptException
+    public int save(Video vid) throws IOException, ScriptException
     {
-        String filename = session.set.savedir+vid.title+".mp4";
+        String dir=session.set.savedir;
+        if(!dir.endsWith("/"))
+            dir=dir.concat("/");
+        String filename = dir+vid.title+".mp4";
         File file = new File(filename);
         if(file.exists())
         {
             session.log(vid.title+" already exists");
-            return;
+            return 1;
         }
         String video = decode(videoUrl(vid)); //
         //System.out.println(">"+vid.title+" - "+video);
         if(video.isEmpty())
         {
             session.log(vid.title+" FAILED linking");
-            return;
+            return 1;
         }
         URL url = new URL(video);
         
@@ -92,7 +96,7 @@ public class Download extends Crawler
                 {
                     try
                     {
-                        Thread.sleep(1);
+                        Thread.sleep(100);
                     } 
                     catch (InterruptedException ex)
                     {
@@ -109,6 +113,7 @@ public class Download extends Crawler
             out.flush();
         }
         session.log(filename+" saved");
+        return 0;
     }
     //open link to vid, get url from page
     private String videoUrl(Video vid) throws ScriptException, IOException

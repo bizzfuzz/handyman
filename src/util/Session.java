@@ -18,8 +18,8 @@ import ui.Window;
  */
 public class Session
 {
-    private List<Search> searches;//list of tags/stars searched
-    public List<String> tags;
+    private List<Search> searches;//perform search and download
+    public List<String> tags;//list of tags/stars searched
     public Prefs set;
     private int saved,current;
     private Window win;
@@ -58,6 +58,17 @@ public class Session
         log("downloading "+set.nVids+" video(s)");
         download();
     }
+    public int pause()
+    {
+        if(searches.isEmpty())
+            return 1;
+        searches.get(current).dl.running=false;
+        return 0;
+    }
+    public void resume()
+    {
+        searches.get(current).dl.running=true;
+    }
     public String tagstring()
     {
         String ret="";
@@ -84,31 +95,37 @@ public class Session
         win.setstatus(text);
     }
     //get next video from active searches //add total to status?
-    public void next()
+    public int next()
     {
         if(saved>set.nVids) //already dl'd wanted n vids
-            return;
-        searches.get(current).next();//dl next vid
+            return 1;
+        int ret=searches.get(current).next();//dl next vid
         if(set.linear)//set next search to dl from
         {
             current++;
-            if(current>=searches.size())
+            if(current>=searches.size())//reached end of tags, back to top
                 current=0;
         }
-        else
+        else// rand tag pick
         {
             Random rand=new Random();
             current=rand.nextInt(searches.size());
         }
+        return ret;
     }
     public void download()
     {
         for(int i=0;i<set.nVids;i++)
         {
-            next();
-            saved++;
-            log(saved+" video(s) saved");
-            System.out.println(saved+" vids\n----------------------------------------");
+            int res=next();
+            if(res==0)
+            {
+                saved++;
+                log(saved+" video(s) saved");
+                System.out.println(saved+" vids\n----------------------------------------");
+            }
+            else
+                i-=1;
         }
         log("done");
     }

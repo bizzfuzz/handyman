@@ -5,9 +5,12 @@
  */
 package site;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.script.ScriptException;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 /**
  *
@@ -25,22 +28,22 @@ public class Xtube extends Site
     @Override
     public String url(Document doc) throws ScriptException
     {
-        Element player = doc.select("section.cntPanel script").first();
-        String url="";
+        Elements scripts = doc.select("script");
+        String player="";
+        List<String> urls=new ArrayList();
         
-        for(String line:player.data().split(","))
-            if(line.trim().startsWith("\"video_url\""))
-            {
-                url=line.trim();
-                break;
-            }
-        for(String value:url.split("\""))
-            if(value.startsWith("http"))
-            {
-                url=value;
-                break;
-            }
-        return url;
+        for(Element script:scripts)
+            if(script.data().contains("playerConf"))
+                player=script.data();
+        for(String line:player.split("\n"))
+            if(line.trim().startsWith("var playerConf"))
+                player=line;
+        for(String seg:player.split("\""))
+            if(seg.trim().startsWith("http") && seg.contains(".mp4"))
+                urls.add(seg);
+        
+        return urls.get(0);
+        
     }
 
     @Override
